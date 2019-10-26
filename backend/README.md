@@ -1,7 +1,19 @@
 This is the backend
 
+Run it using `npm run dev` or `npm run start`
 
-## /class/phys2212
+Requirements:
+```
+node
+npm
+mongo
+mongoku
+```
+
+
+## GET /class/:name
+
+Gets the class rubric and the grades of the current user for that class
 
 {
   "classname": "Physics 2212",
@@ -26,4 +38,26 @@ This is the backend
       "extra-credit": "false"
     }
   ]
+}
+
+## POST /class/:name/grade
+
+Add a grade
+
+{
+  "category": "Homework",
+  "name": "Homework 1",
+  "percent_grade": 0.92,
+  "points": 37,
+  "max_points": 40,
+  "weight": 1,
+  "extra-credit": "false"
+}
+
+## POST /class/:name/grade/delete
+
+Deletes the grade with the given name
+
+{
+  "name": "Homework 1"
 }
