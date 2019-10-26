@@ -15,6 +15,7 @@ mongoku
 
 Gets the class rubric and the grades of the current user for that class
 
+```json
 {
   "classname": "Physics 2212",
   "professor": "Mr. Physics",
@@ -23,8 +24,8 @@ Gets the class rubric and the grades of the current user for that class
     {
       "name": "Homework",
       "weight": 0.20,
-      "format": "drop_2"
-      subcategories: []
+      "format": "drop_2",
+      "subcategories": []
     }
   ],
   "grades":[
@@ -39,11 +40,13 @@ Gets the class rubric and the grades of the current user for that class
     }
   ]
 }
+```
 
 ## POST /class/:name/grade
 
 Add a grade
 
+```json
 {
   "category": "Homework",
   "name": "Homework 1",
@@ -53,11 +56,14 @@ Add a grade
   "weight": 1,
   "extra-credit": "false"
 }
+```
 
 ## POST /class/:name/grade/delete
 
 Deletes the grade with the given name
 
+```json
 {
   "name": "Homework 1"
 }
+```
