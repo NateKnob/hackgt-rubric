@@ -1,1 +1,29 @@
 This is the backend
+
+
+## /class/phys2212
+
+{
+  "classname": "Physics 2212",
+  "professor": "Mr. Physics",
+  "creator": "George P. Burdell",
+  "rubric":[
+    {
+      "name": "Homework",
+      "weight": 0.20,
+      "format": "drop_2"
+      subcategories: []
+    }
+  ],
+  "grades":[
+    {
+      "category": "Homework",
+      "name": "Homework 1",
+      "percent_grade": 0.92,
+      "points": 37,
+      "max_points": 40,
+      "weight": 1,
+      "extra-credit": "false"
+    }
+  ]
+}
