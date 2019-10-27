@@ -1,15 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import App from './App';
+import Home from './Home';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import Navbar from 'react-bootstrap/Navbar'
+
 class MyForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      professor: '',
       class: null,
-      errormessage: ''
     };
   }
+
   myChangeHandler = (event) => {
     let nam = event.target.name;
     let val = event.target.value;
@@ -22,24 +28,27 @@ class MyForm extends React.Component {
     this.setState({errormessage: err});
     this.setState({[nam]: val});
   }
+
+  setClass = (c) => {
+    this.setState({class:c})
+  }
+
+  getInner = () => {
+    if (this.state.class == null) {
+      return <Home/>
+    } else {
+      return <App class={this.state.class}/>
+    }
+  }
+
   render() {
     return (
-      <form>
-      <h1>Find Your Rubric {this.state.class} {this.state.professor}</h1>
-      <p>Enter your class:</p>
-      <input
-        type='text'
-        class='class'
-        onChange={this.myChangeHandler}
-      />
-      <p>Enter your professor:</p>
-      <input
-        type='text'
-        name='professor'
-        onChange={this.myChangeHandler}
-      />
-      {this.state.errormessage}
-      </form>
+      <div>
+        <Navbar bg="light" expand="lg">
+          <Navbar.Brand onclick={() => {this.setClass(null)}}>React-Bootstrap</Navbar.Brand>
+        </Navbar>
+        {this.getInner()}
+      </div>
     );
   }
 }
