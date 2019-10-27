@@ -6,7 +6,7 @@ import Home from './Home';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Navbar from 'react-bootstrap/Navbar'
+import {Navbar, Container} from 'react-bootstrap'
 
 class MyForm extends React.Component {
   constructor(props) {
@@ -29,15 +29,15 @@ class MyForm extends React.Component {
     this.setState({[nam]: val});
   }
 
-  setClass = (c) => {
+  changeClass = (c) => {
     this.setState({class:c})
   }
 
   getInner = () => {
     if (this.state.class == null) {
-      return <Home/>
+      return <Home class={this.state.class} changeClass={this.changeClass}/>
     } else {
-      return <App class={this.state.class}/>
+      return <App class={this.state.class} changeClass={this.changeClass}/>
     }
   }
 
@@ -45,9 +45,11 @@ class MyForm extends React.Component {
     return (
       <div>
         <Navbar bg="light" expand="lg">
-          <Navbar.Brand onclick={() => {this.setClass(null)}}>React-Bootstrap</Navbar.Brand>
+          <Navbar.Brand onClick={() => {this.changeClass(null)}}><a href="#home">Home</a></Navbar.Brand>
         </Navbar>
-        {this.getInner()}
+        <Container>
+          {this.getInner()}
+        </Container>
       </div>
     );
   }

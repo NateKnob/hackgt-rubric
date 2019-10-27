@@ -52,13 +52,13 @@ app.use(function(err, req, res, next) {
 app.post('/class/', function (req, res) {
   let body = req.body;
   Class.findOne({name:req.body.name}, (err, c) => {
-    if (err) {
-      let newClass = new Class(body);
-      newClass.save();
-    } else {
+    if (c) {
       console.log("overwriting class")
       c.overwrite(body);
       c.save();
+    } else {
+      let newClass = new Class(body);
+      newClass.save();
     }
   }).then(() => {
     res.json({'status':'ok'})
@@ -72,16 +72,23 @@ app.get('/class/', function (req, res) {
 })
 
 app.get('/class/:classname', function (req, res) {
-  res.json(Class.find({name:req.params.classname}))
+  Class.findOne({name:req.params.classname}, (err,c) => {
+    res.json(c);
+  });
 })
 
 app.post('/class/:classname/grade', function (req, res) {
   let classname = req.params.classname
   let body = req.body;
+  body.grade = Number(body.grade)
+  console.log(body.grade)
+  console.log(body)
   let newGrade = new Grade(req.body);
   newGrade.save();
+  console.log(newGrade);
   Class.findOne({name:classname}, function(err, c) {
     c.grades.push(newGrade);
+    c.save();
   })
   res.send({"status": "ok"})
 })
