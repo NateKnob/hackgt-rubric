@@ -12,7 +12,7 @@ var cors = require('cors')
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const {AssignmentCategory, Grade, Class} = require('./model');
+const { Category, Grade, Class } = require('./model');
 
 var app = express();
 
@@ -33,7 +33,10 @@ app.use(cors());
 
 var dummy = require('./dummy.json');
 
-mongoose.connect('mongodb://localhost/rubric', {
+const creds = require('./credentials.json');
+
+mongoose.connect('mongodb+srv://admin:'+creds['mongo_password']+'@cluster0-dljvx.gcp.mongodb.net/test?retryWrites=true&w=majority', {
+  dbName: 'rubrico_db',
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -72,8 +75,19 @@ app.get('/class/', function (req, res) {
 })
 
 app.get('/class/:classname', function (req, res) {
-  Class.findOne({name:req.params.classname}, (err,c) => {
-    res.json(c);
+  let classname = req.params.classname;
+  Class.findOne({name:classname}, (err,c) => {
+    c_obj = c.toObject();
+    Promise.all(
+      [Grade.find({class:classname}, (err, grades) => {
+        c_obj.grades = grades;
+      }),
+      Category.find({class:classname}, (err, rubric) => {
+        c_obj.rubric = rubric
+      })]
+    ).then((err)=> {
+      res.json(c_obj);
+    })
   });
 })
 
@@ -81,23 +95,26 @@ app.post('/class/:classname/grade', function (req, res) {
   let classname = req.params.classname
   let body = req.body;
   body.grade = Number(body.grade)
-  console.log(body.grade)
-  console.log(body)
+  body.class = classname
   let newGrade = new Grade(req.body);
   newGrade.save();
   console.log(newGrade);
-  Class.findOne({name:classname}, function(err, c) {
-    c.grades.push(newGrade);
-    c.save();
-  })
   res.send({"status": "ok"})
 })
 
 app.post('/class/:classname/grade/delete', (req,res) => {
   let classname = req.params.classname
   let body = req.body;
-  Grade.findOne({name:body.name}, function(err, g) {
-    g.delete();
+  console.log(body);
+  Grade.findById(body._id, function(err, g) {
+    console.log("found")
+    console.log(g)
+    if ((!err) && (g)) {
+      console.log("delete")
+      g.delete();
+    } else {
+      console.log(err);
+    }
   })
   res.send({"status": "ok"})
 })

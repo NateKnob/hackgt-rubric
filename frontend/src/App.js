@@ -4,6 +4,7 @@ import './App.css';
 
 import {Col, Row, Table, Form, Button} from 'react-bootstrap';
 import CategoryListing from './Components/CategoryListing';
+import GradeListing from './Components/GradeListing';
 
 import axios from 'axios';
 
@@ -24,6 +25,14 @@ class App extends Component {
     });
   }
 
+  refreshPage = () => {
+    axios.get('http://localhost:3000/class/'+this.classname)
+    .then(res => {
+      this.setState({class: res.data, loaded:true});
+      this.render();
+    });
+  }
+
   handleGradeSubmit = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -35,7 +44,10 @@ class App extends Component {
     }
     console.log(body);
     let classname = this.classname;
-    axios.post('http://localhost:3000/class/'+classname+'/grade', body);
+    axios.post('http://localhost:3000/class/'+classname+'/grade', body)
+    .then((err)=>{
+        this.refreshPage();
+    });
   }
 
   render() {
@@ -59,30 +71,41 @@ class App extends Component {
               </Table>
             </Col>
             <Col>
-            <Form onSubmit={this.handleGradeSubmit}>
-              <Form.Group controlId="formName">
-                <Form.Label>Assignment Name</Form.Label>
-                <Form.Control type="text" name='name' placeholder="Homework 3" />
-              </Form.Group>
+              <Form onSubmit={this.handleGradeSubmit}>
+                <Form.Group controlId="formName">
+                  <Form.Label>Assignment Name</Form.Label>
+                  <Form.Control type="text" name='name' placeholder="Homework 3" />
+                </Form.Group>
+                <Row>
+                  <Col>
+                    <Form.Group controlId="formSelect">
+                      <Form.Label>Category</Form.Label>
+                      <Form.Control as="select" name='category'>
+                        <option value='Homework'>Homework</option>
+                        <option value='Midterm'>Midterm</option>
+                      </Form.Control>
+                    </Form.Group>
+                  </Col>
+                  <Col>
+                    <Form.Group controlId="formGrade">
+                      <Form.Label>Percent Grade</Form.Label>
+                      <Form.Control type="text" name='percent_grade' placeholder="0.85" />
+                    </Form.Group>
+                  </Col>
+                </Row>
 
-              <Form.Group controlId="formSelect">
-                <Form.Label>Category</Form.Label>
-                <Form.Control as="select" name='category'>
-                  <option value='Homework'>Homework</option>
-                  <option value='Midterm'>Midterm</option>
-                </Form.Control>
-              </Form.Group>
-
-              <Form.Group controlId="formGrade">
-                <Form.Label>Percent Grade</Form.Label>
-                <Form.Control type="text" name='percent_grade' placeholder="0.85" />
-              </Form.Group>
-
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-            </Form>
-              Hm
+                <Button variant="primary" type="submit">
+                  Submit
+                </Button>
+              </Form>
+              <hr/>
+              <Table>
+                <tbody>
+                  { this.state.class.grades.map((value, index) => {
+                    return <GradeListing grade={value} refresh={this.refreshPage} />
+                  })}
+                </tbody>
+              </Table>
             </Col>
           </Row>
         </div>
