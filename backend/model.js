@@ -1,20 +1,29 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const model = mongoose.model;
+const passportLocalMongoose = require('passport-local-mongoose');
 
 const CategorySchema = Schema({
   name: String,
   weight: Number,
-  class: String,
-  format: String
+  formula: String
 })
 const Category = model('Category', CategorySchema);
 
-const GradeSchema = Schema({
-  category: String,
+
+const CourseSchema = Schema({
   name: String,
-  class: String,
-  percent_grade: Number,
+  professor: String,
+
+  owner: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+})
+const Course = model('Course', CourseSchema);
+
+
+const GradeSchema = Schema({
+  name: String,
+  category: String,
+  // percent_grade: Number,
   points: Number,
   max_points: Number,
   weight: Number,
@@ -22,13 +31,21 @@ const GradeSchema = Schema({
 })
 const Grade = model('Grade', GradeSchema);
 
-const ClassSchema = Schema({
-  name: { type : String , unique : true, required : true, dropDups: true },
-  professor: String,
-  creator: String,
+
+const CourseMemorySchema = Schema({
+  course: { type: Schema.Types.ObjectId, ref: 'Course' },
+  grades: [GradeSchema]
 })
-const Class = model('Class', ClassSchema);
+const CourseMemory = model('CourseMemory', CourseSchema);
 
 
+const UserSchema = new Schema({
+  course_ownership: [{ type: Schema.Types.ObjectId, ref: 'Course' }],
+  course_memories: [CourseMemorySchema],
+  username: String,
+  password: String
+});
+UserSchema.plugin(passportLocalMongoose);
+User = mongoose.model('User', UserSchema);
 
-module.exports = {Category, Grade, Class}
+module.exports = {Category, Course, Grade, CourseMemory, User}

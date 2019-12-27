@@ -1,70 +1,75 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
 
 import {Col, Row, Table, Form, Button} from 'react-bootstrap';
-import CategoryListing from './Components/CategoryListing';
-import GradeListing from './Components/GradeListing';
+import CategoryListing from './CategoryListing';
+import GradeListing from './GradeListing';
 
 import axios from 'axios';
 
-class App extends Component {
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+
+import { isEmpty } from "lodash";
+
+class CourseView extends Component {
   constructor(props) {
     super(props);
-    this.classname = this.props.class;
-    this.state = {
-      loaded: false,
-      class: null,
-    };
+    // this.state = {
+    //   loaded: false,
+    //   course: null,
+    // };
   }
 
   componentDidMount() {
-    axios.get('http://localhost:3000/class/'+this.classname)
-    .then(res => {
-      this.setState({class: res.data, loaded:true});
-    });
+    // axios.get('http://localhost:3000/class/'+this.classname)
+    // .then(res => {
+    //   this.setState({class: res.data, loaded:true});
+    // });
   }
 
   refreshPage = () => {
-    axios.get('http://localhost:3000/class/'+this.classname)
-    .then(res => {
-      this.setState({class: res.data, loaded:true});
-      this.render();
-    });
+    // axios.get('http://localhost:3000/class/'+this.classname)
+    // .then(res => {
+    //   this.setState({class: res.data, loaded:true});
+    //   this.render();
+    // });
   }
 
   handleGradeSubmit = (e) => {
-    e.preventDefault();
-    const data = new FormData(e.target);
-    // NOTE: you access FormData fields with `data.get(fieldName)`
-    let body = {
-      name: data.get('name'),
-      category: data.get('category'),
-      percent_grade: data.get('percent_grade')
-    }
-    console.log(body);
-    let classname = this.classname;
-    axios.post('http://localhost:3000/class/'+classname+'/grade', body)
-    .then((err)=>{
-        this.refreshPage();
-    });
+    // e.preventDefault();
+    // const data = new FormData(e.target);
+    // // NOTE: you access FormData fields with `data.get(fieldName)`
+    // let body = {
+    //   name: data.get('name'),
+    //   category: data.get('category'),
+    //   percent_grade: data.get('percent_grade')
+    // }
+    // console.log(body);
+    // let classname = this.classname;
+    // axios.post('http://localhost:3000/class/'+classname+'/grade', body)
+    // .then((err)=>{
+    //     this.refreshPage();
+    // });
   }
 
   render() {
-    if (this.state.loaded == false) {
+    // if (this.state.loaded == false) {
+    console.log(isEmpty(this.props.working_course))
+    console.log(this.props.working_course)
+    if (isEmpty(this.props.working_course)) {
       return "Loading..."
     } else {
       return (
         <div className="App">
           <Row>
             <Col className="text-left">
-              <h1>{this.state.class.name}</h1>
-              <h3>Taught by {this.state.class.professor}</h3>
-              <h3>Created by {this.state.class.creator}</h3>
+              <h1>{this.props.working_course.name}</h1>
+              <h3>Taught by {this.props.working_course.professor}</h3>
+              <h3>Created by {this.props.working_course.owner_name}</h3>
               <hr/>
               <Table>
                 <tbody>
-                  { this.state.class.rubric.map((value, index) => {
+                  { this.props.working_course.categories.map((value, index) => {
                     return <CategoryListing category={value} />
                   })}
                 </tbody>
@@ -101,7 +106,7 @@ class App extends Component {
               <hr/>
               <Table>
                 <tbody>
-                  { this.state.class.grades.map((value, index) => {
+                  { this.props.working_course.grades.map((value, index) => {
                     return <GradeListing grade={value} refresh={this.refreshPage} />
                   })}
                 </tbody>
@@ -114,4 +119,15 @@ class App extends Component {
   }
 }
 
-export default App;
+CourseView.propTypes = {
+};
+
+const mapStateToProps = state => ({
+  working_course: state.core.working_course,
+  cloud_course: state.core.cloud_course
+});
+
+export default connect(
+  mapStateToProps,
+  { }
+)(CourseView);

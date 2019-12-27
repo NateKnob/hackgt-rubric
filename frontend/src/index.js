@@ -1,58 +1,72 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import App from './App';
-import Home from './Home';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+
+import CourseView from './components/CourseView';
+import Search from './components/Search';
+import Login from './components/Login';
+import MyNavbar from './components/Navbar';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container } from 'react-bootstrap'
 
-import {Navbar, Container} from 'react-bootstrap'
-
-class MyForm extends React.Component {
+class MyApplication extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      class: null,
-    };
   }
 
-  myChangeHandler = (event) => {
-    let nam = event.target.name;
-    let val = event.target.value;
-    let err = '';
-    if (nam === "class") {
-      if (val !="" && !Number(val)) {
-        err = <strong>Enter a professor name</strong>;
-      }
-    }
-    this.setState({errormessage: err});
-    this.setState({[nam]: val});
-  }
+  // myChangeHandler = (event) => {
+  //   let nam = event.target.name;
+  //   let val = event.target.value;
+  //   let err = '';
+  //   if (nam === "class") {
+  //     if (val !="" && !Number(val)) {
+  //       err = <strong>Enter a professor name</strong>;
+  //     }
+  //   }
+  //   this.setState({errormessage: err});
+  //   this.setState({[nam]: val});
+  // }
+  //
+  // changeClass = (c) => {
+  //   this.setState(Object.assign(this.state,{class:c}))
+  // }
+  //
+  // changePage = (p) => {
+  //   this.setState(Object.assign(this.state,{page:p}))
+  // }
 
-  changeClass = (c) => {
-    this.setState({class:c})
-  }
-
-  getInner = () => {
-    if (this.state.class == null) {
-      return <Home class={this.state.class} changeClass={this.changeClass}/>
-    } else {
-      return <App class={this.state.class} changeClass={this.changeClass}/>
-    }
-  }
+  // getInner = () => {
+  //   if (this.state.page == "home") {
+  //     return <Home class={this.state.class} changeClass={this.changeClass}/>
+  //   } else if (this.state.page == "login") {
+  //     return <Login />
+  //   } else {
+  //     return <App class={this.state.class} changeClass={this.changeClass}/>
+  //   }
+  // }
 
   render() {
     return (
-      <div>
-        <Navbar bg="light" expand="lg">
-          <Navbar.Brand onClick={() => {this.changeClass(null)}}><a href="#home">Home</a></Navbar.Brand>
-        </Navbar>
-        <Container>
-          {this.getInner()}
-        </Container>
-      </div>
+      <Provider store={store}>
+          <Router>
+            <div className="App">
+              <MyNavbar/>
+                <Container>
+                <Switch>
+                  <Route exact path="/" component={Search} />
+                  <Route exact path="/login" component={Login} />
+                  <Route exact path="/course" component={CourseView} />
+                </Switch>
+              </Container>
+            </div>
+          </Router>
+      </Provider>
     );
   }
 }
 
-ReactDOM.render(<MyForm />, document.getElementById('root'));
+ReactDOM.render(<MyApplication />, document.getElementById('root'));
